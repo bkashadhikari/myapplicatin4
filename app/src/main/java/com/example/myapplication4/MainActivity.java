@@ -23,20 +23,43 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_main);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-            // Log the start of the onCreate() method.
-            Log.d(LOG_TAG, "-------");
-            Log.d(LOG_TAG, "onCreate");
+        Log.d(LOG_TAG, "-------");
+        Log.d(LOG_TAG, "onCreate");
 
-            // Initialize all the view variables.
-            mMessageEditText = findViewById(R.id.editText_main);
-            mReplyHeadTextview = findViewById(R.id.text_header_reply);
-            mReplyTextview= findViewById(R.id.text_message_reply);
+        // Initialize all the view variables.
+        mMessageEditText = findViewById(R.id.editText_main);
+        mReplyHeadTextview = findViewById(R.id.text_header_reply);
+       mReplyTextview = findViewById(R.id.text_message_reply);
 
+        // Restore the saved state.
+        // See onSaveInstanceState() for what gets saved.
+        if (savedInstanceState != null) {
+            boolean isVisible =
+                    savedInstanceState.getBoolean("reply_visible");
+            // Show both the header and the message views. If isVisible is
+            // false or missing from the bundle, use the default layout.
+            if (isVisible) {
+                mReplyHeadTextview.setVisibility(View.VISIBLE);
+               mReplyTextview.setText(savedInstanceState
+                        .getString("reply_text"));
+              mReplyTextview.setVisibility(View.VISIBLE);
+            }
+        }
     }
-
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        // If the heading is visible, message needs to be saved.
+        // Otherwise we're still using default layout.
+        if (mReplyHeadTextview.getVisibility() == View.VISIBLE) {
+            outState.putBoolean("reply_visible", true);
+            outState.putString("reply_text",
+                    mReplyTextview.getText().toString());
+        }
+    }
     @Override
     public void onActivityResult(int requestCode,
                                  int resultCode, Intent data) {
